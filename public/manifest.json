@@ -1,0 +1,9 @@
+{
+  "name": "Verify",
+  "short_name": "Verify",
+  "theme_color": "#11fa4f",
+  "background_color": "#00918f",
+  "display": "fullscreen",
+  "scope": "/",
+  "start_url": "/index.html"
+}
