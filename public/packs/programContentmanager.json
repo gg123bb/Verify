@@ -1,0 +1,34 @@
+{
+  "content": [
+    {
+      "id": "home-de",
+      "lang": "de",
+      "category": "homepage",
+      "priority": 10,
+      "private": "false",
+      "start": "true",
+      "end": "false",
+      "link": "./packs/DE/home-de.json"
+    },
+    {
+      "id": "home-en",
+      "lang": "en",
+      "category": "homepage",
+      "priority": 10,
+      "private": "false",
+      "start": "true",
+      "end": "false",
+      "link": "./packs/EN/home-en.json"
+    },
+    {
+      "id": "notfound",
+      "lang": "de",
+      "category": "notfound",
+      "priority": 1,
+      "private": "false",
+      "start": "true",
+      "end": "false",
+      "link": "./packs/404/notfound.json"
+    }
+  ]
+}

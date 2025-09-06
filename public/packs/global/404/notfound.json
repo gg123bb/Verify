@@ -1,0 +1,17 @@
+{
+  "modules": [
+    {
+      "meta": { "id": "notfound" },
+      "content": [
+        {
+          "type": "h1",
+          "text": "Seite nicht gefunden"
+        },
+        {
+          "type": "p",
+          "text": "Das angeforderte Sprachpaket existiert nicht."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "modules": [
+    {
+      "meta": {"id": "sessionloader"},
+      "content": [
+        {
+          "type": "div",
+          "attributes": {},
+          "children": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "modules": [
+    {
+      "meta": { "id": "welcome-en" },
+      "content": [
+        {
+          "type": "h1",
+          "text": "Welcome to my page!"
+        },
+        {
+          "type": "p",
+          "text": "This is the English homepage, generated from JSON."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "modules": [
+    {
+      "meta": { "id": "welcome-de" },
+      "content": [
+        {
+          "type": "div",
+          "attributes": {
+            "style": "width: 100vw; height: 15vh; background-color: var(--themen-color);"
+          },
+          "children": [
+            {
+              "type": "div",
+              "text": "Verify",
+              "attributes": {
+                "style": "position: relative; top: 5vh; margin: auto; width: fit-content; color: var(--themen-text-color); font-size: 5vh; font-weight: bold;"
+              }
+            }
+          ]
+        },
+        {
+          "type": "script",
+          "text": "sitebuilder({target: `dynamic-content`, placeholder: ``,});"
+        },
+        {
+          "type": "p",
+          "text": "Dies ist die deutsche generiert Startseite."
+        },
+        {
+          "type": "p",
+          "text": "Diese Verify version ist noch nicht fertig, veröffentlichen nur mit Datenschutz, Cookie und Nutzungsbedingungen!"
+        }
+      ]
+    }
+  ]
+}

@@ -4,11 +4,15 @@
 }
 :root {
 
+    --themen-color: #06aec8;
+    --themen-text-color: white;
+
     --loader-color: #008cff;
     --loader-shadow: rgba(0, 0, 0, 0.2);
 }
 body {
-
+    margin: 0;
+    padding: 0;
 }
 
 .loader {
