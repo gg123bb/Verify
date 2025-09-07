@@ -1,16 +1,21 @@
-// contentManager.js
 import { createModule } from './contentBuilder.js';
+import { getURLParams } from '../tracker/urlTracker.js';
 
-// Sprachpakete JSON laden
+/**
+ * Sprachpakete JSON laden
+ */
 export async function loadLanguagePacks(link) {
-    if (!link) throw new Error("Kein Link für das Sprachpaket bereitgestellt.");
+    if (!link) throw new Error("❌ Kein Link für das Sprachpaket bereitgestellt.");
     const response = await fetch(link);
     return response.json();
 }
 
-// Sprachpaket auswählen nach Sprache, Kategorie etc.
+/**
+ * Sprachpaket auswählen (Sprache, Kategorie, Datum, Priority, Privacy)
+ */
 export function selectLanguagePack(languagePacks, userLang, category) {
     const now = new Date();
+
     const filtered = languagePacks.filter(pack => {
         const startDate = (pack.start && pack.start !== "true") ? new Date(pack.start) : null;
         const endDate   = (pack.end && pack.end !== "false") ? new Date(pack.end) : null;
@@ -26,19 +31,25 @@ export function selectLanguagePack(languagePacks, userLang, category) {
     });
 
     filtered.sort((a, b) => b.priority - a.priority);
+
     return filtered[0] || null;
 }
 
-// Sprachpaket-Inhalt laden
+/**
+ * Sprachpaket-Inhalt laden (aus JSON-Link)
+ */
 export async function loadSelectedLanguagePack(packURL) {
+    if (!packURL) throw new Error("❌ Keine URL für Sprachpaket angegeben.");
     const response = await fetch(packURL);
     return response.json();
 }
 
-// Content ins DOM einfügen
+/**
+ * Content in ein Ziel-DIV einfügen
+ */
 export async function insertContentFromPack(content, targetId = "dynamic-content") {
     const container = document.getElementById(targetId);
-    if (!container) throw new Error(`Kein Container mit ID ${targetId} gefunden`);
+    if (!container) throw new Error(`❌ Kein Container mit ID "${targetId}" gefunden.`);
 
     container.innerHTML = '';
 
@@ -51,4 +62,24 @@ export async function insertContentFromPack(content, targetId = "dynamic-content
     } else {
         container.innerHTML = `<p>${JSON.stringify(content)}</p>`;
     }
+}
+
+/**
+ * Content anhand von URL-Parametern laden
+ * Beispiel: ?lang=de&page=homepage
+ */
+export async function loadContentFromURL(path) {
+    const params = getURLParams();
+
+    const lang = params.lang || "de";       // Default: deutsch
+    const page = params.page || "homepage"; // Default: homepage
+
+    const packs = await loadLanguagePacks(path);
+    const selected = selectLanguagePack(packs.content, lang, page);
+
+    if (!selected) {
+        throw new Error(`❌ Kein ContentPack für lang="${lang}" und page="${page}" gefunden.`);
+    }
+
+    return loadSelectedLanguagePack(selected.link);
 }

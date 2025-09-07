@@ -1,11 +1,11 @@
 import { showLoader, hideLoader } from './modules/loader/loader.js';
 import { fetchIPData } from './modules/tracker/iptracker.js';
 import {
-    loadLanguagePacks,
-    selectLanguagePack,
-    loadSelectedLanguagePack
+    loadContentFromURL,
+    insertContentFromPack, // ✅ nur hier importieren
 } from './modules/loader/contentManager.js';
-import { createModule, insertContentFromPack } from './modules/loader/contentBuilder.js';
+import { createModule } from './modules/loader/contentBuilder.js'; // ✅ kein doppelter Import
+
 
 // Universeller Sitebuilder
 async function sitebuilder({
@@ -29,16 +29,16 @@ async function sitebuilder({
 
     if (parentElem !== document.body) {
         parentElem.innerHTML = placeholder;
-        if (loader) showLoader(parentElem);
+        if (loader) showLoader("center");
     } else {
-        if (loader) showLoader(document.body);
+        if (loader) showLoader("center");
     }
 
     try {
         let data = task ? await task() : null;
 
         if (transform) {
-            data = await transform(data); // z.B. ContentManager → richtige JSON finden
+            data = await transform(data);
         }
 
         hideLoader();
@@ -46,9 +46,8 @@ async function sitebuilder({
         if (build) {
             const built = build(data, parentElem);
 
-            // Falls Builder DOM direkt einfügt (wie ContentBuilder)
             if (built === undefined || built === null) {
-                return;
+                return; // ContentBuilder rendert direkt
             }
 
             if (parentElem !== document.body) {
@@ -70,8 +69,9 @@ async function sitebuilder({
     }
 }
 
+
 // ---------------------------------
-// Content:
+// Beispiele
 // ---------------------------------
 document.addEventListener('DOMContentLoaded', () => {
     // Beispiel 1: IP
@@ -80,23 +80,19 @@ document.addEventListener('DOMContentLoaded', () => {
         placeholder: "Lade IP...",
         task: fetchIPData,
         build: (data) => `
-            Deine IP: ${data.ip}<br>
-            Land: ${data.country}<br>
-            Provider: ${data.isp}
+            your ip: ${data.ip}<br>
+            land: ${data.country}<br>
+            provider: ${data.isp}
         `
     });
 
-    // ContentBuilder Modul:
+    // Beispiel 2: Content
     sitebuilder({
         target: "dynamic-content",
-        placeholder: "Lade Content...",
-        task: () => loadLanguagePacks("./packs/programContentmanager.json"),
-        transform: (packs) => {
-            const selected = selectLanguagePack(packs.content, "de", "homepage");
-            return loadSelectedLanguagePack(selected.link);
-        },
+        placeholder: "",
+        task: () => loadContentFromURL("./packs/programContentmanager.json"),
         build: (data, parentElem) => {
-            insertContentFromPack(data, parentElem.id); // ContentBuilder übernimmt Rendering
+            insertContentFromPack(data, parentElem.id); // rendert Module
         }
     });
 });
