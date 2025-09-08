@@ -1,13 +1,21 @@
+// contentManager.js
 import { createModule } from './contentBuilder.js';
 import { getURLParams } from '../tracker/urlTracker.js';
+import { startProcess, endProcess } from './loader.js';
 
 /**
  * Sprachpakete JSON laden
  */
 export async function loadLanguagePacks(link) {
     if (!link) throw new Error("❌ Kein Link für das Sprachpaket bereitgestellt.");
-    const response = await fetch(link);
-    return response.json();
+
+    startProcess("loadLanguagePacks");
+    try {
+        const response = await fetch(link);
+        return await response.json();
+    } finally {
+        endProcess("loadLanguagePacks");
+    }
 }
 
 /**
@@ -31,7 +39,6 @@ export function selectLanguagePack(languagePacks, userLang, category) {
     });
 
     filtered.sort((a, b) => b.priority - a.priority);
-
     return filtered[0] || null;
 }
 
@@ -40,8 +47,14 @@ export function selectLanguagePack(languagePacks, userLang, category) {
  */
 export async function loadSelectedLanguagePack(packURL) {
     if (!packURL) throw new Error("❌ Keine URL für Sprachpaket angegeben.");
-    const response = await fetch(packURL);
-    return response.json();
+
+    startProcess("loadSelectedLanguagePack");
+    try {
+        const response = await fetch(packURL);
+        return await response.json();
+    } finally {
+        endProcess("loadSelectedLanguagePack");
+    }
 }
 
 /**
@@ -51,16 +64,21 @@ export async function insertContentFromPack(content, targetId = "dynamic-content
     const container = document.getElementById(targetId);
     if (!container) throw new Error(`❌ Kein Container mit ID "${targetId}" gefunden.`);
 
-    container.innerHTML = '';
+    startProcess(`insertContent:${targetId}`);
+    try {
+        container.innerHTML = '';
 
-    if (content.modules && Array.isArray(content.modules)) {
-        for (const module of content.modules) {
-            const { meta, content: moduleContent } = module;
-            const moduleHTML = createModule(meta, moduleContent);
-            container.appendChild(moduleHTML);
+        if (content.modules && Array.isArray(content.modules)) {
+            for (const module of content.modules) {
+                const { meta, content: moduleContent } = module;
+                const moduleHTML = createModule(meta, moduleContent);
+                container.appendChild(moduleHTML);
+            }
+        } else {
+            container.innerHTML = `<p>${JSON.stringify(content)}</p>`;
         }
-    } else {
-        container.innerHTML = `<p>${JSON.stringify(content)}</p>`;
+    } finally {
+        endProcess(`insertContent:${targetId}`);
     }
 }
 
@@ -70,16 +88,20 @@ export async function insertContentFromPack(content, targetId = "dynamic-content
  */
 export async function loadContentFromURL(path) {
     const params = getURLParams();
+    const lang = params.lang || "de";
+    const page = params.page || "homepage";
 
-    const lang = params.lang || "de";       // Default: deutsch
-    const page = params.page || "homepage"; // Default: homepage
+    startProcess("loadContentFromURL");
+    try {
+        const packs = await loadLanguagePacks(path);
+        const selected = selectLanguagePack(packs.content, lang, page);
 
-    const packs = await loadLanguagePacks(path);
-    const selected = selectLanguagePack(packs.content, lang, page);
+        if (!selected) {
+            throw new Error(`❌ Kein ContentPack für lang="${lang}" und page="${page}" gefunden.`);
+        }
 
-    if (!selected) {
-        throw new Error(`❌ Kein ContentPack für lang="${lang}" und page="${page}" gefunden.`);
+        return await loadSelectedLanguagePack(selected.link);
+    } finally {
+        endProcess("loadContentFromURL");
     }
-
-    return loadSelectedLanguagePack(selected.link);
 }

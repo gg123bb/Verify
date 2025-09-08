@@ -28,7 +28,7 @@
       "private": "false",
       "start": "true",
       "end": "false",
-      "link": "./packs/404/notfound.json"
+      "link": "./packs/global/404/notfound.json"
     }
   ]
 }

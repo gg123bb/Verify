@@ -1,4 +1,4 @@
-import { showLoader, hideLoader } from './modules/loader/loader.js';
+import { startProcess, endProcess, debugProcesses } from './modules/loader/loader.js';
 import { fetchIPData } from './modules/tracker/iptracker.js';
 import {
     loadContentFromURL,
@@ -29,43 +29,39 @@ async function sitebuilder({
 
     if (parentElem !== document.body) {
         parentElem.innerHTML = placeholder;
-        if (loader) showLoader("center");
-    } else {
-        if (loader) showLoader("center");
     }
+
+    const processName = `sitebuilder:${parentElem.id || "root"}`;
+    if (loader) startProcess(processName);
 
     try {
         let data = task ? await task() : null;
-
         if (transform) {
             data = await transform(data);
         }
 
-        hideLoader();
-
         if (build) {
             const built = build(data, parentElem);
 
-            if (built === undefined || built === null) {
-                return; // ContentBuilder rendert direkt
-            }
-
-            if (parentElem !== document.body) {
-                parentElem.innerHTML = built;
-            } else {
-                parentElem.insertAdjacentHTML("beforeend", built);
+            if (built !== undefined && built !== null) {
+                if (parentElem !== document.body) {
+                    parentElem.innerHTML = built;
+                } else {
+                    parentElem.insertAdjacentHTML("beforeend", built);
+                }
             }
         } else {
             parentElem.innerText = JSON.stringify(data);
         }
     } catch (err) {
-        hideLoader();
         if (parentElem !== document.body) {
             parentElem.innerHTML = "⚠️ Fehler beim Laden";
         } else {
             parentElem.insertAdjacentHTML("beforeend", "<p>⚠️ Fehler beim Laden</p>");
         }
         console.error(err);
+    } finally {
+        if (loader) endProcess(processName);
     }
 }
 
@@ -89,10 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Beispiel 2: Content
     sitebuilder({
         target: "dynamic-content",
-        placeholder: "",
+        placeholder: "Lade Content...",
         task: () => loadContentFromURL("./packs/programContentmanager.json"),
         build: (data, parentElem) => {
             insertContentFromPack(data, parentElem.id); // rendert Module
         }
     });
+
+    // Debug-Loader dauerhaft sichtbar
+    //startProcess("debug");
+    debugProcesses(); // zeigt im Log an, wer gerade läuft
 });

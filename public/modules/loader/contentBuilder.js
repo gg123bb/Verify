@@ -1,4 +1,5 @@
 // contentBuilder.js
+import { startProcess, endProcess } from './loader.js';
 
 export function createModule(meta, content) {
     const wrapper = document.createElement("div");
@@ -24,7 +25,6 @@ export function createModule(meta, content) {
     return wrapper;
 }
 
-// Neue Funktion für ContentManager / Sitebuilder
 export function insertContentFromPack(content, targetId) {
     const container = typeof targetId === "string"
         ? document.getElementById(targetId)
@@ -35,15 +35,19 @@ export function insertContentFromPack(content, targetId) {
         return;
     }
 
-    // ❌ Container leeren, sonst bleibt der Placeholder
-    container.innerHTML = '';
+    startProcess(`insertContent:${targetId}`);
+    try {
+        container.innerHTML = '';
 
-    if (content.modules && Array.isArray(content.modules)) {
-        content.modules.forEach(module => {
-            const moduleHTML = createModule(module.meta, module.content);
-            container.appendChild(moduleHTML);
-        });
-    } else {
-        container.innerHTML = `<p>${JSON.stringify(content)}</p>`;
+        if (content.modules && Array.isArray(content.modules)) {
+            content.modules.forEach(module => {
+                const moduleHTML = createModule(module.meta, module.content);
+                container.appendChild(moduleHTML);
+            });
+        } else {
+            container.innerHTML = `<p>${JSON.stringify(content)}</p>`;
+        }
+    } finally {
+        endProcess(`insertContent:${targetId}`);
     }
 }
