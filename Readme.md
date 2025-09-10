@@ -34,6 +34,7 @@ We’re keeping things lean and mean with **vanilla JavaScript** — no framewor
 ## Final Words
 
 Thanks for checking out Verify. I hope you build something awesome with it!
+Please note that this product may only be used with the owner's permission.
 
 Happy coding,  
 ~ Controller
