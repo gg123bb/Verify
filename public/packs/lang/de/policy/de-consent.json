@@ -1,0 +1,12 @@
+{
+  "ip_tracker": {
+    "title": "Öffentliche IP erfassen",
+    "purpose": "Erfassung der öffentlichen IP-Adresse des Nutzers für Analyse und Protokollierung.",
+    "legalBasis": "Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)"
+  },
+  "cookies": {
+    "title": "Cookies speichern",
+    "purpose": "Speicherung von Cookies für Funktionalität, Analyse und Personalisierung.",
+    "legalBasis": "Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)"
+  }
+}

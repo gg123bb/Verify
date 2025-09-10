@@ -1,0 +1,23 @@
+{
+  "modules": [
+    {
+      "meta": { "id": "consent-quick" },
+      "content": [
+        {
+          "type": "div",
+          "attributes": { "class": ["consent-quick","tile-card"] },
+          "children": [
+            { "type": "p", "text": "Bitte stimmen Sie den Nutzungs- und Datenschutzbedingungen zu." },
+            { "type": "button", "attributes": { "id": "consent-accept" }, "text": "Akzeptieren" },
+            { "type": "button", "attributes": { "id": "consent-more" }, "text": "Mehr anzeigen" }
+          ]
+        },
+        {
+          "type": "script",
+          "module": true,
+          "text": "import { saveSelection, runEnabledFeatures, getQuickFormTileset } from '/modules/consent/consentApi.js';\n\n// Eventhandler an Buttons im Tileset\nconst acc = document.getElementById('consent-accept');\nconst more = document.getElementById('consent-more');\nif (acc) acc.addEventListener('click', async () => {\n  await saveSelection({ cookies: true });\n  await runEnabledFeatures();\n  // optional: remove the quick UI\n  const el = document.getElementById('consent-quick'); if (el) el.remove();\n});\nif (more) more.addEventListener('click', () => {\n  // dispatch event that page can listen to and swap to extended form\n  document.dispatchEvent(new CustomEvent('consent:showExtended'));\n});"
+        }
+      ]
+    }
+  ]
+}

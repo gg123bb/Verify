@@ -15,8 +15,16 @@ body {
     padding: 0;
 }
 
-.loader {
-    position: relative;
+.loader-wrapper.loader-center {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+}
+
+/* Standard Spinner */
+.loader-spinner {
     width: 50px;
     height: 50px;
     border: 5px var(--loader-color) solid;
@@ -25,15 +33,31 @@ body {
     border-radius: 100%;
     box-shadow: 0px 0px 4px 1px var(--loader-shadow);
     animation: rotateLoader 2s linear infinite;
-    }
+}
 
+/* Bild Loader */
+.loader-picture {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+}
 
-/* Entfernt margin für Center-Version */
-.loader-center {
-    margin: 0;
+/* Custom CSS Loader */
+.loader-custom {
+    width: 50px;
+    height: 50px;
+    background: red;
+    animation: pulse 1s infinite alternate;
 }
 
 @keyframes rotateLoader {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to   { transform: translate(-50%, -50%) rotate(360deg); }
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
 }
+
+@keyframes pulse {
+    from { opacity: 0.3; }
+    to   { opacity: 1; }
+}
+
+

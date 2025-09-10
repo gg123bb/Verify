@@ -1,0 +1,34 @@
+{
+  "policyVersion": "1.0.0",
+  "region": "eu",
+  "features": [
+    {
+      "key": "ip_tracker",
+      "module": "../tracker/ipTracker.js",
+      "title": "Public IP Tracking",
+      "purpose": "Capture and log the user's public IP address.",
+      "dataCategories": ["IP address", "Country", "ISP"],
+      "legalBasis": "Art. 6 (1) a GDPR (consent)",
+      "retention": "Until revoked (local storage) / short-term logging",
+      "controllerContact": "Controller: Website operator",
+      "vorgangsname": "ip-track-consent",
+      "default": false,
+      "required": false,
+      "classes": ["feature-card", "tracker-box"]
+    },
+    {
+      "key": "cookies",
+      "module": "../tracker/cookieManager.js",
+      "title": "Cookies",
+      "purpose": "Store cookies for functionality, analytics, and personalization.",
+      "dataCategories": ["Cookies", "Tracking data"],
+      "legalBasis": "Art. 6 (1) a GDPR (consent)",
+      "retention": "Until revoked or cookie expiry",
+      "controllerContact": "Controller: Website operator",
+      "vorgangsname": "cookie-consent",
+      "default": false,
+      "required": false,
+      "classes": ["feature-card", "cookie-box"]
+    }
+  ]
+}

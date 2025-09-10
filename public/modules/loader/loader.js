@@ -1,65 +1,133 @@
-// loader.js
-
-let activeProcesses = new Set();
+let activeProcesses = new Set();       // alle Prozesse (inkl. silent)
+let visualProcesses = new Set();       // nur Prozesse, die Loader sichtbar machen
+let listeners = [];
 
 /**
- * Zeigt Loader an (zentriert oder in einem Target).
- * Aber: wird nur entfernt, wenn wirklich keine Prozesse mehr laufen.
+ * Startet einen Prozess (visuell oder nur dokumentarisch).
  */
-export function startProcess(name = "default", target = "center") {
+export function startProcess(
+    name = "default",
+    {
+        silent = false,
+        design = "default", // "default" | "picture" | "class"
+        target = "center",
+        picture = null,
+        cssClass = null,
+        rotate = true
+    } = {}
+) {
     activeProcesses.add(name);
+    notifyListeners();
+
+    if (silent) return; // nur dokumentieren → kein UI
+
+    visualProcesses.add(name);
 
     // Wenn Loader schon sichtbar → nichts tun
-    if (document.querySelector(".loader")) return;
+    if (document.querySelector(".loader-wrapper")) return;
 
-    const loader = document.createElement("div");
-    loader.className = "loader";
+    const wrapper = document.createElement("div");
+    wrapper.className = "loader-wrapper";
 
+    let loaderElement;
+
+    switch (design) {
+        case "picture":
+            loaderElement = document.createElement("img");
+            loaderElement.src = picture || "default-loader.png";
+            loaderElement.classList.add("loader-picture");
+            break;
+
+        case "class":
+            loaderElement = document.createElement("div");
+            if (cssClass) {
+                if (Array.isArray(cssClass)) {
+                    loaderElement.classList.add(...cssClass);
+                } else {
+                    loaderElement.className = cssClass; // string → alle Klassen drin
+                }
+            } else {
+                loaderElement.className = "loader-custom";
+            }
+            break;
+
+        default: // Standard-Spinner
+            loaderElement = document.createElement("div");
+            loaderElement.className = "loader-spinner";
+    }
+
+    if (rotate) {
+        loaderElement.classList.add("rotate");
+    }
+
+    wrapper.appendChild(loaderElement);
+
+    // Positionieren
     if (typeof target === "string") {
         if (target === "center") {
-            loader.style.position = "fixed";
-            loader.style.left = "50%";
-            loader.style.top = "50%";
-            loader.style.transform = "translate(-50%, -50%)";
-            loader.style.zIndex = "10000";
-            loader.classList.add("loader-center"); // extra Klasse für zentrierten Loader
-            document.body.appendChild(loader);
+            wrapper.classList.add("loader-center");
+            document.body.appendChild(wrapper);
         } else if (target === "body") {
-            document.body.appendChild(loader);
+            document.body.appendChild(wrapper);
         } else {
             const parentElem = document.getElementById(target);
-            if (parentElem) parentElem.appendChild(loader);
-            else document.body.appendChild(loader);
+            if (parentElem) parentElem.appendChild(wrapper);
+            else document.body.appendChild(wrapper);
         }
     } else if (target instanceof HTMLElement) {
-        target.appendChild(loader);
+        target.appendChild(wrapper);
     } else {
-        document.body.appendChild(loader);
+        document.body.appendChild(wrapper);
     }
 }
 
 /**
- * Beendet einen Prozess. Loader bleibt sichtbar, solange noch andere laufen.
+ * Beendet einen Prozess.
  */
 export function endProcess(name = "default") {
     activeProcesses.delete(name);
+    visualProcesses.delete(name);
+    notifyListeners();
 
-    if (activeProcesses.size === 0) {
+    if (visualProcesses.size === 0) {
         hideLoader();
     }
 }
 
 /**
- * Fallback: entfernt sofort alle Loader
+ * Entfernt alle Loader sofort.
  */
 export function hideLoader() {
-    document.querySelectorAll(".loader").forEach(loader => loader.remove());
-    activeProcesses.clear();
+    document.querySelectorAll(".loader-wrapper").forEach(loader => loader.remove());
+    visualProcesses.clear();
+    notifyListeners();
 }
 
 /**
- * Debug: zeigt alle aktiven Prozesse in der Konsole
+ * Aktive Prozesse (alle, inkl. silent).
+ */
+export function getActiveProcesses() {
+    return [...activeProcesses];
+}
+
+/**
+ * Debug: zeigt alle aktiven Prozesse in der Konsole.
  */
 export function debugProcesses() {
-    console.log("🔎 Aktive Loader-Prozesse:", [...activeProcesses]);
+    console.log("🔎 Aktive Prozesse:", getActiveProcesses());
+    console.log("💡 Sichtbare Prozesse:", [...visualProcesses]);
+}
+
+/**
+ * Listener registrieren.
+ */
+export function onProcessChange(callback) {
+    if (typeof callback === "function") {
+        listeners.push(callback);
+    }
+}
+
+function notifyListeners() {
+    const processes = getActiveProcesses();
+    listeners.forEach(cb => cb(processes));
 }

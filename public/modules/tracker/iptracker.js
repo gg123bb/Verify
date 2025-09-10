@@ -1,20 +1,14 @@
-// ipTracker.js
-
-// Funktion nur für die Daten-Logik
-export async function fetchIPData() {
+// tracker/ipTracker.js
+export async function run() {
     try {
-        const response = await fetch('/ip-api');
+        const response = await fetch("/ip-api");
         const data = await response.json();
-        return {
+        console.log("📡 IP-Daten:", {
             ip: data.query || data.ip || "unbekannt",
             country: data.country || "unbekannt",
             isp: data.isp || "unbekannt"
-        };
+        });
     } catch (e) {
-        return {
-            ip: "Fehler",
-            country: "unbekannt",
-            isp: "unbekannt"
-        };
+        console.error("❌ Fehler beim IP-Tracker", e);
     }
 }

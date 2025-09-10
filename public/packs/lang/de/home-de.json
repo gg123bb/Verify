@@ -19,16 +19,28 @@
           ]
         },
         {
-          "type": "script",
-          "text": "sitebuilder({target: `dynamic-content`, placeholder: ``,});"
+          "type": "p",
+          "text": "Dies ist die deutsche generierte Startseite."
         },
         {
           "type": "p",
-          "text": "Dies ist die deutsche generiert Startseite."
+          "text": "Diese Verify-Version ist noch nicht fertig, veröffentlichen nur mit Datenschutz, Cookie und Nutzungsbedingungen!"
         },
         {
           "type": "p",
-          "text": "Diese Verify version ist noch nicht fertig, veröffentlichen nur mit Datenschutz, Cookie und Nutzungsbedingungen!"
+          "text": "Verify verifiziert mit: IP-Adresse, Cookies, Browser-Fingerabdruck, Google-Konten, Discord OAuth, Nutzerverhalten analysieren und Client-Zertifikate. Alle Daten werden generiert ausgewertet."
+        },
+        {
+          "type": "tileset",
+          "name": "policy",
+          "mode": "quick",
+          "props": { "mount": "consent-container" }
+        },
+        {
+          "type": "div",
+          "attributes":{
+            "id": "consent-container"
+          }
         }
       ]
     }

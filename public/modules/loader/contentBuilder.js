@@ -6,18 +6,30 @@ export function createModule(meta, content) {
     wrapper.id = meta.id || "";
 
     function createElement(item) {
-        const el = document.createElement(item.type);
+        let el;
 
-        if (item.attributes) {
-            Object.entries(item.attributes).forEach(([attr, val]) => {
-                el.setAttribute(attr, val);
-            });
+        if (item.type === "script") {
+            el = document.createElement("script");
+            el.type = "module"; // zwingt Browser, Script als ES Modul zu interpretieren
+            el.textContent = item.text || "";
+        } else if (item.type === "tileset") {
+            el = document.createElement("div");
+            el.id = `tileset-${item.name}-${meta.id || Math.random().toString(36).substr(2,5)}`;
+            el.dataset.tileset = item.name;
+            el.dataset.mode = item.mode || "default";
+            if (item.props) Object.entries(item.props).forEach(([k,v]) => el.dataset[k] = v);
+        } else {
+            el = document.createElement(item.type);
+            if (item.attributes) {
+                Object.entries(item.attributes).forEach(([attr, val]) => el.setAttribute(attr, val));
+            }
+            if (item.text) el.innerText = item.text;
         }
-        if (item.text) el.innerText = item.text;
 
         if (item.children) {
             item.children.forEach(child => el.appendChild(createElement(child)));
         }
+
         return el;
     }
 
@@ -25,13 +37,13 @@ export function createModule(meta, content) {
     return wrapper;
 }
 
-export function insertContentFromPack(content, targetId) {
+export function insertContentFromPack(content, targetId = "dynamic-content") {
     const container = typeof targetId === "string"
         ? document.getElementById(targetId)
         : targetId;
 
     if (!container) {
-        console.error(`Container "${targetId}" nicht gefunden`);
+        console.error(`❌ Container "${targetId}" nicht gefunden`);
         return;
     }
 
@@ -45,7 +57,7 @@ export function insertContentFromPack(content, targetId) {
                 container.appendChild(moduleHTML);
             });
         } else {
-            container.innerHTML = `<p>${JSON.stringify(content)}</p>`;
+            container.innerHTML = `<pre>${JSON.stringify(content, null, 2)}</pre>`;
         }
     } finally {
         endProcess(`insertContent:${targetId}`);

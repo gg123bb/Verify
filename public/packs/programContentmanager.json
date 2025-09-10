@@ -8,7 +8,7 @@
       "private": "false",
       "start": "true",
       "end": "false",
-      "link": "./packs/DE/home-de.json"
+      "link": "./packs/lang/DE/home-de.json"
     },
     {
       "id": "home-en",
@@ -18,7 +18,7 @@
       "private": "false",
       "start": "true",
       "end": "false",
-      "link": "./packs/EN/home-en.json"
+      "link": "./packs/lang/EN/home-en.json"
     },
     {
       "id": "notfound",

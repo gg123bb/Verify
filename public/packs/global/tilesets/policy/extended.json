@@ -1,0 +1,14 @@
+{
+  "ip_tracker": {
+    "title": "Öffentliche IP erfassen",
+    "purpose": "Anzeige & Protokoll der öffentlichen IP-Adresse.",
+    "legalBasis": "Art. 6 Abs. 1 lit. a DSGVO",
+    "dataCategories": ["IP-Adresse", "Land", "ISP"]
+  },
+  "cookies": {
+    "title": "Cookies",
+    "purpose": "Speicherung von Cookies zur Sitzungsverwaltung",
+    "legalBasis": "Art. 6 Abs. 1 lit. a DSGVO",
+    "dataCategories": ["Cookie-Daten"]
+  }
+}
