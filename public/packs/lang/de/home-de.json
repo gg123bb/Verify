@@ -31,15 +31,16 @@
           "text": "Verify verifiziert mit: IP-Adresse, Cookies, Browser-Fingerabdruck, Google-Konten, Discord OAuth, Nutzerverhalten analysieren und Client-Zertifikate. Alle Daten werden generiert ausgewertet."
         },
         {
-          "type": "tileset",
-          "name": "policy",
-          "mode": "quick",
-          "props": { "mount": "consent-container" }
-        },
-        {
           "type": "div",
           "attributes":{
             "id": "consent-container"
+          }
+        },
+        {
+          "type": "tileset",
+          "props": {
+            "mount": "consent-container",
+            "link": "./packs/global/tilesets/policy/quick.json"
           }
         }
       ]

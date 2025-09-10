@@ -5,7 +5,7 @@
       "content": [
         {
           "type": "div",
-          "attributes": { "class": ["consent-quick","tile-card"] },
+          "attributes": { "class": ["consent-quick","tile-card"], "id": "consent-quick" },
           "children": [
             { "type": "p", "text": "Bitte stimmen Sie den Nutzungs- und Datenschutzbedingungen zu." },
             { "type": "button", "attributes": { "id": "consent-accept" }, "text": "Akzeptieren" },
@@ -15,7 +15,7 @@
         {
           "type": "script",
           "module": true,
-          "text": "import { saveSelection, runEnabledFeatures, getQuickFormTileset } from '/modules/consent/consentApi.js';\n\n// Eventhandler an Buttons im Tileset\nconst acc = document.getElementById('consent-accept');\nconst more = document.getElementById('consent-more');\nif (acc) acc.addEventListener('click', async () => {\n  await saveSelection({ cookies: true });\n  await runEnabledFeatures();\n  // optional: remove the quick UI\n  const el = document.getElementById('consent-quick'); if (el) el.remove();\n});\nif (more) more.addEventListener('click', () => {\n  // dispatch event that page can listen to and swap to extended form\n  document.dispatchEvent(new CustomEvent('consent:showExtended'));\n});"
+          "text": "import { saveSelection, runEnabledFeatures } from '/modules/consent/consentApi.js';\nimport { insertContentFromPack } from '/modules/loader/contentManager.js';\n\nconst acc = document.getElementById('consent-accept');\nconst more = document.getElementById('consent-more');\n\nif (acc) acc.addEventListener('click', async () => {\n  await saveSelection({ cookies: true });\n  await runEnabledFeatures();\n  const el = document.getElementById('consent-quick'); if (el) el.remove();\n});\n\nif (more) more.addEventListener('click', async () => {\n  // Quick UI entfernen\n  const el = document.getElementById('consent-quick'); if (el) el.remove();\n\n  // Extended Tileset laden\n  const extendedTileset = await fetch('./packs/global/tilesets/policy/extended.json').then(r => r.json());\n  insertContentFromPack(extendedTileset, 'consent-container');\n});"
         }
       ]
     }

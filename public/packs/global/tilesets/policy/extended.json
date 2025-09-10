@@ -1,14 +1,78 @@
 {
-  "ip_tracker": {
-    "title": "Öffentliche IP erfassen",
-    "purpose": "Anzeige & Protokoll der öffentlichen IP-Adresse.",
-    "legalBasis": "Art. 6 Abs. 1 lit. a DSGVO",
-    "dataCategories": ["IP-Adresse", "Land", "ISP"]
-  },
-  "cookies": {
-    "title": "Cookies",
-    "purpose": "Speicherung von Cookies zur Sitzungsverwaltung",
-    "legalBasis": "Art. 6 Abs. 1 lit. a DSGVO",
-    "dataCategories": ["Cookie-Daten"]
-  }
+  "modules": [
+    {
+      "meta": { "id": "consent-extended" },
+      "content": [
+        {
+          "type": "div",
+          "attributes": {
+            "class": "consent-extended-container"
+          },
+          "children": [
+            {
+              "type": "h2",
+              "text": "Detaillierte Zustimmung"
+            },
+            {
+              "type": "div",
+              "attributes": { "class": "consent-feature" },
+              "children": [
+                {
+                  "type": "label",
+                  "children": [
+                    {
+                      "type": "input",
+                      "attributes": {
+                        "type": "checkbox",
+                        "name": "ip_tracker"
+                      }
+                    },
+                    { "type": "strong", "text": "Öffentliche IP erfassen" },
+                    { "type": "p", "text": "Anzeige & Protokoll der öffentlichen IP-Adresse." },
+                    { "type": "p", "text": "Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO" }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "div",
+              "attributes": { "class": "consent-feature" },
+              "children": [
+                {
+                  "type": "label",
+                  "children": [
+                    {
+                      "type": "input",
+                      "attributes": {
+                        "type": "checkbox",
+                        "name": "cookies"
+                      }
+                    },
+                    { "type": "strong", "text": "Cookies" },
+                    { "type": "p", "text": "Speicherung von Cookies zur Sitzungsverwaltung" },
+                    { "type": "p", "text": "Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO" }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "attributes": { "id": "consent-save-extended" },
+              "text": "Einstellungen speichern"
+            },
+            {
+              "type": "button",
+              "attributes": { "id": "consent-back-quick" },
+              "text": "Zurück zur schnellen Ansicht"
+            },
+            {
+              "type": "script",
+              "module": true,
+              "text": "import { insertContentFromPack } from '/modules/loader/contentManager.js';\n\nconst backBtn = document.getElementById('consent-back-quick');\nif (backBtn) backBtn.addEventListener('click', async () => {\n  const mountDiv = document.getElementById('consent-container');\n  if (mountDiv) {\n    mountDiv.innerHTML = '';\n    const quickTileset = await fetch('./packs/global/tilesets/policy/quick.json').then(r => r.json());\n    await insertContentFromPack(quickTileset, 'consent-container');\n  }\n});"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

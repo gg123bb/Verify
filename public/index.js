@@ -2,9 +2,11 @@
 import { ConsentManager } from './modules/consent/consentManager.js';
 import { setManager } from './modules/consent/consentApi.js';
 import { loadContentFromURL, insertContentFromPack } from './modules/loader/contentManager.js';
-import { startProcess, endProcess } from './modules/loader/loader.js';
+import { startProcess, endProcess, debugProcesses } from './modules/loader/loader.js';
 
-// index.js (unterhalb imports einfügen)
+// --------------------------
+// Sitebuilder global verfügbar machen
+// --------------------------
 window.sitebuilder = async function sitebuilder({
                                                     target,
                                                     loader = true,
@@ -13,9 +15,7 @@ window.sitebuilder = async function sitebuilder({
                                                     transform, // optional: Daten verarbeiten
                                                     build      // Funktion die DOM erzeugt / HTML string zurückgibt
                                                 }) {
-    let parentElem = typeof target === "string"
-        ? document.getElementById(target)
-        : target;
+    let parentElem = typeof target === "string" ? document.getElementById(target) : target;
 
     if (!parentElem) {
         console.warn(`⚠️ Sitebuilder: Target "${target}" nicht gefunden. Neues DIV wird erstellt.`);
@@ -26,9 +26,7 @@ window.sitebuilder = async function sitebuilder({
 
     if (loader) startProcess(`sitebuilder-${target}`, { design: "default", target: "center" });
 
-    if (parentElem !== document.body && placeholder) {
-        parentElem.innerHTML = placeholder;
-    }
+    if (parentElem !== document.body && placeholder) parentElem.innerHTML = placeholder;
 
     try {
         let data = task ? await task() : null;
@@ -59,11 +57,25 @@ window.sitebuilder = async function sitebuilder({
     }
 };
 
-
+// --------------------------
+// Init App
+// --------------------------
 (async function initApp() {
-    startProcess("initApp");
+    startProcess("loader", { design: "default", target: "center" });
 
     try {
+        // --------------------------
+        // App-Container erstellen
+        // --------------------------
+        let appContainer = document.getElementById("app");
+        if (!appContainer) {
+            appContainer = document.createElement("div");
+            appContainer.id = "app";
+            document.body.appendChild(appContainer);
+            console.log("ℹ️ #app automatisch erzeugt");
+        }
+        appContainer.innerHTML = "<p>Lädt…</p>";
+
         // --------------------------
         // Region & Sprache bestimmen
         // --------------------------
@@ -76,44 +88,13 @@ window.sitebuilder = async function sitebuilder({
         const manager = new ConsentManager({ region, language: lang });
         await manager.loadPolicy();
         setManager(manager);
-
         console.log("✅ ConsentManager geladen:", manager.getStatus());
-
-        // --------------------------
-        // App-Container sicherstellen
-        // --------------------------
-        let appContainer = document.getElementById("app");
-        if (!appContainer) {
-            appContainer = document.createElement("div");
-            appContainer.id = "app";
-            document.body.appendChild(appContainer);
-            console.log("ℹ️ #app automatisch erzeugt");
-        }
 
         // --------------------------
         // Content Packs laden (Seite selbst)
         // --------------------------
         const pageContent = await loadContentFromURL("./packs/programContentmanager.json");
-        insertContentFromPack(pageContent, "app"); // jetzt sicher vorhanden
-
-        // --------------------------
-        // Tilesets laden (Quick Consent)
-        // --------------------------
-        try {
-            const quickTileset = await fetch("./packs/global/tilesets/policy/quick.json").then(r => r.json());
-            insertContentFromPack(quickTileset, "consent-container");
-        } catch (err) {
-            console.warn("⚠️ Kein consent-container im DOM vorhanden – wird ggf. per JSON erzeugt.");
-        }
-
-        // --------------------------
-        // Event: Extended Consent laden
-        // --------------------------
-        document.addEventListener("consent:showExtended", async () => {
-            console.log("ℹ️ Extended Consent Tileset laden...");
-            const extendedTileset = await fetch("./packs/global/tilesets/policy/extended.json").then(r => r.json());
-            insertContentFromPack(extendedTileset, "consent-container");
-        });
+        await insertContentFromPack(pageContent, "app");
 
         // --------------------------
         // Features starten (falls Zustimmung gespeichert)
@@ -122,7 +103,9 @@ window.sitebuilder = async function sitebuilder({
 
     } catch (err) {
         console.error("❌ Fehler beim Initialisieren:", err);
+        if (appContainer) appContainer.innerHTML = "<p>⚠️ Fehler beim Laden der App</p>";
     } finally {
-        endProcess("initApp");
+        endProcess("loader");
+        debugProcesses(); // Optional: alle Loader-Debugs anzeigen
     }
 })();
